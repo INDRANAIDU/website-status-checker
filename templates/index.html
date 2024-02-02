@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Website Status Checker</title>
+
+    <!-- Add some basic styles for better appearance -->
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 20px;
+        }
+
+        h1 {
+            color: #000000;
+            text-align: center;
+        }
+
+        div {
+            margin-bottom: 10px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input {
+            width: 200px;
+            padding: 5px;
+        }
+
+        button {
+            padding: 5px;
+            cursor: pointer;
+        }
+
+        #statusContainer {
+            margin-top: 10px;
+        }
+
+        table {
+            width: 60%;
+            border-collapse: collapse;
+            border: 2px solid black;
+            margin-top: 20px;
+        }
+
+        th, td {
+            border: 1px solid #999696;
+            padding: 8px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #9f9b9b;
+            border: 2px solid black;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+ <h1>Website Status Checker</h1><hr>
+    
+    <div>
+        <label for="websiteInput">Website Name:</label>
+        <input type="text" id="websiteInput" placeholder="Enter website name (e.g., Amazon)">
+        <button onclick="checkStatus()">Check Status</button>
+    </div>
+
+    <div id="statusContainer"></div>
+
+    <!-- Add a new table to display website statuses -->
+    <table id="websiteTable">
+        <thead>
+            <tr>
+                <th>Website</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody id="websiteTableBody">
+            <!-- Initial table rows for all websites -->
+            <!-- Use Jinja syntax for templating -->
+            {% for website in websites %}
+                <tr>
+                    <td>{{ website.name }}</td>
+                    <td id="{{ website.name|lower }}-status">Checking...</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <script>
+        // Initial status update for all websites
+        window.onload = async function() {
+            const websites = document.querySelectorAll('#websiteTableBody tr');
+            for (const websiteRow of websites) {
+                const websiteName = websiteRow.cells[0].textContent.trim();
+                const statusCell = document.getElementById(`${websiteName.toLowerCase()}-status`);
+                await updateStatus(websiteName, statusCell);
+            }
+        };
+
+        // Function to check the status of a specific website
+        async function checkStatus() {
+            const websiteInput = document.getElementById('websiteInput');
+            const statusContainer = document.getElementById('statusContainer');
+
+            const websiteName = websiteInput.value.trim();
+            if (!websiteName) return;
+
+            const statusCell = document.getElementById(`${websiteName.toLowerCase()}-status`);
+
+            try {
+                await updateStatus(websiteName, statusCell);
+
+                // Update the status container
+                statusContainer.innerHTML = `<p>Network Status for ${websiteName}: ${statusCell.textContent}</p>`;
+            } catch (error) {
+                console.error(`Error checking status: ${error}`);
+                statusContainer.innerHTML = `<p>Error checking status for ${websiteName}: ${error}</p>`;
+            }
+        }
+
+        // Function to update the status of a specific website
+        async function updateStatus(websiteName, statusCell) {
+            const response = await fetch('/check_status', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ website_name: websiteName }),
+            });
+
+            const data = await response.json();
+
+            if ('error' in data) {
+                throw new Error(data.error);
+            } else {
+                const status = data.status;
+                statusCell.textContent = status;
+            }
+        }
+    </script>
+</body>
+</html>
