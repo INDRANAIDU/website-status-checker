@@ -1,4 +1,4 @@
-----------------THIS CODE IS TO CHECK AND VIEW THE WEBSITES NETWORK STATUS AND SAVE IT IN DATA BASE.----------------------
+# ----------------THIS CODE IS TO CHECK AND VIEW THE WEBSITES NETWORK STATUS AND SAVE IT IN DATA BASE.----------------------
 
 {
 BACKEND:PYTHON FLASK.
@@ -6,7 +6,7 @@ FRONTEND:HTML,CSS,JAVASCRIPT.
 DATABASE:DB browser sqlite.
 }
 
-<-------------------HOW TO INSTALL AND RUN THE CODE----------------->
+# <-------------------HOW TO INSTALL AND RUN THE CODE----------------->
 
 # ---->STEP-1: Open terminal and navigate to the project path.
 # ---->Step 2: Create a Virtual Environment to isolate project dependencies: To create virtual env run the following commands in terminal.
